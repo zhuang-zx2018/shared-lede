@@ -66,6 +66,7 @@ jobs:
         multi_config:
           - 'multi-common.config'
           - 'multi-mini.config'
+          - 'multi-tiny.config'
     steps:
 
       - name: Hide sensitive inputs
