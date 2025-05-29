@@ -96,14 +96,16 @@ permissions:
 jobs:
   to-build:
     name: build
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     env:
       EXTRA_STR: _some
     steps:
-      - name: Clean up post-build
+    
+      - name: Clear GitHub Actions cache
         run: |
-          sudo rm -rf /tmp/*
-          docker system prune -a -f
+          # 清理Actions运行器缓存
+          rm -rf ~/.cache/actions-runner/_work/*
+          rm -rf ~/.cache/actions-runner/cached/*
           
       - name: Hide sensitive inputs
         if: github.event_name == 'workflow_dispatch'
@@ -119,7 +121,34 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: ${{ env.EXTRA_STR }}
-
+          
+      # 2. 添加清理步骤（关键部分）
+      - name: Clean temporary files and free disk space
+        run: |
+          # 显示清理前的磁盘空间
+          echo "Disk space before cleanup:"
+          df -h
+          
+          # 清理系统临时文件
+          sudo rm -rf /tmp/*
+          sudo rm -rf /var/tmp/*
+          
+          # 清理APT缓存
+          sudo apt-get clean
+          sudo rm -rf /var/lib/apt/lists/*
+          
+          # 清理构建临时文件
+          rm -rf $GITHUB_WORKSPACE/tmp
+          rm -rf $GITHUB_WORKSPACE/build_dir
+          rm -rf $GITHUB_WORKSPACE/staging_dir
+          
+          # 清理下载缓存（谨慎使用）
+          # rm -rf $GITHUB_WORKSPACE/dl/*
+          
+          # 显示清理后的磁盘空间
+          echo "Disk space after cleanup:"
+          df -h
+          
       - name: Prepare environments
         env:
           REQUIREMENTS: ${{ env.EXTRA_STR }}/extra-files/requirements-transit.txt
