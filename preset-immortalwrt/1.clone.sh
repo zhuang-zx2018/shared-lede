@@ -27,3 +27,4 @@ mkdir $SUPPLY_DIR && cd $SUPPLY_DIR
 git clone --depth 1 https://github.com/jerrykuku/luci-theme-argon.git
 git clone --depth 1 https://github.com/jerrykuku/luci-app-argon-config.git
 git clone --depth 1 https://github.com/zhuang-zx2018/UA2F.git
+git clone --depth 1 https://github.com/sbwml/luci-app-alist.git
