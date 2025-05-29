@@ -122,6 +122,37 @@ jobs:
         with:
           path: ${{ env.EXTRA_STR }}
           
+        # ▼▼▼ 添加这个清理步骤 ▼▼▼
+      - name: Free disk space
+        run: |
+          # 显示清理前空间
+          echo "=== Disk space BEFORE cleanup ==="
+          df -h
+          
+          # 核心清理命令
+          sudo rm -rf /usr/local/lib/android     # 清理Android SDK（如果不需要）
+          sudo rm -rf /opt/ghc                  # 清理Haskell
+          sudo rm -rf /usr/local/share/boost     # 清理Boost
+          sudo rm -rf /usr/share/dotnet          # 清理.NET
+          sudo rm -rf /usr/local/lib/node_modules # 清理全局Node模块
+          sudo rm -rf /usr/local/share/powershell # 清理PowerShell
+          sudo rm -rf /usr/local/share/chromium  # 清理Chromium
+          
+          # 清理系统缓存
+          sudo apt-get clean
+          sudo rm -rf /var/lib/apt/lists/*
+          sudo rm -rf /tmp/*
+          sudo rm -rf /var/tmp/*
+          
+          # 清理Runner自身缓存
+          rm -rf ~/.cache/actions-runner/_work/_temp
+          rm -rf ~/.cache/actions-runner/cached/_diag/*.log
+          
+          # 显示清理后空间
+          echo "=== Disk space AFTER cleanup ==="
+          df -h
+          
+      # ▲▲▲ 清理步骤结束 ▲▲▲
       # 2. 添加清理步骤（关键部分）
       - name: Clean temporary files and free disk space
         run: |
