@@ -100,7 +100,11 @@ jobs:
     env:
       EXTRA_STR: _some
     steps:
-
+      - name: Clean up post-build
+        run: |
+          sudo rm -rf /tmp/*
+          docker system prune -a -f
+          
       - name: Hide sensitive inputs
         if: github.event_name == 'workflow_dispatch'
         uses: hugcabbage/action-hide-sensitive-inputs@v1
@@ -233,3 +237,17 @@ jobs:
           df -h
           echo "----------------------------"
           du -h --max-depth=1
+      - name: Delete workflow runs
+        uses: Mattraks/delete-workflow-runs@main
+        with:
+          retain_days: 0
+          keep_minimum_runs: 2
+
+      - name: Remove old Releases
+        uses: dev-drprasad/delete-older-releases@master
+        if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+        with:
+          keep_latest: 3
+          delete_tags: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
