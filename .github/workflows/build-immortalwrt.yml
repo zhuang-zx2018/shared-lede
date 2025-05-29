@@ -96,7 +96,7 @@ permissions:
 jobs:
   to-build:
     name: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     env:
       EXTRA_STR: _some
     steps:
