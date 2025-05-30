@@ -101,11 +101,7 @@ jobs:
       EXTRA_STR: _some
     steps:
     
-      - name: Clear GitHub Actions cache
-        run: |
-          # 清理Actions运行器缓存
-          rm -rf ~/.cache/actions-runner/_work/*
-          rm -rf ~/.cache/actions-runner/cached/*
+
           
       - name: Hide sensitive inputs
         if: github.event_name == 'workflow_dispatch'
@@ -121,6 +117,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: ${{ env.EXTRA_STR }}
+          
+      - name: Clear GitHub Actions cache
+        run: |
+          # 清理Actions运行器缓存
+          rm -rf ~/.cache/actions-runner/_work/*
+          rm -rf ~/.cache/actions-runner/cached/*
           
         # ▼▼▼ 添加这个清理步骤 ▼▼▼
       - name: Free disk space
@@ -175,6 +177,7 @@ jobs:
           
           # 清理下载缓存（谨慎使用）
           # rm -rf $GITHUB_WORKSPACE/dl/*
+          sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc /etc/mysql /etc/php
           
           # 显示清理后的磁盘空间
           echo "Disk space after cleanup:"
