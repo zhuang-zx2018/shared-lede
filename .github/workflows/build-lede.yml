@@ -107,6 +107,99 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: ${{ env.EXTRA_STR }}
+          
+      - name: Clear GitHub Actions cache
+        run: |
+          # 清理Actions运行器缓存
+          rm -rf ~/.cache/actions-runner/_work/*
+          rm -rf ~/.cache/actions-runner/cached/*
+          
+        # ▼▼▼ 添加这个清理步骤 ▼▼▼
+      - name: Free disk space
+        run: |
+          # 显示清理前空间
+          echo "=== Disk space BEFORE cleanup ==="
+          df -h
+          
+          # 核心清理命令
+          sudo rm -rf /usr/local/lib/android     # 清理Android SDK（如果不需要）
+          sudo rm -rf /opt/ghc                  # 清理Haskell
+          sudo rm -rf /usr/local/share/boost     # 清理Boost
+          sudo rm -rf /usr/share/dotnet          # 清理.NET
+          sudo rm -rf /usr/local/lib/node_modules # 清理全局Node模块
+          sudo rm -rf /usr/local/share/powershell # 清理PowerShell
+          sudo rm -rf /usr/local/share/chromium  # 清理Chromium
+          
+          # 清理系统缓存
+          sudo apt-get clean
+          sudo rm -rf /var/lib/apt/lists/*
+          sudo rm -rf /tmp/*
+          sudo rm -rf /var/tmp/*
+          
+          # 清理Runner自身缓存
+          rm -rf ~/.cache/actions-runner/_work/_temp
+          rm -rf ~/.cache/actions-runner/cached/_diag/*.log
+          
+          # 显示清理后空间
+          echo "=== Disk space AFTER cleanup ==="
+          df -h
+          
+      # ▼▼▼ 添加这个强力清理步骤 ▼▼▼
+      - name: Free disk space for OpenWrt build
+        run: |
+          # 显示清理前空间
+          echo "=== Disk space BEFORE cleanup ==="
+          df -h
+          
+          # 清理系统预装的大型开发工具
+          sudo rm -rf /usr/local/lib/android     # Android SDK (~4GB)
+          sudo rm -rf /opt/hostedtoolcache       # 工具缓存 (~3GB)
+          sudo rm -rf /usr/local/share/powershell # PowerShell (~1GB)
+          sudo rm -rf /usr/local/lib/node_modules # 全局Node模块 (~1GB)
+          
+          # 清理系统缓存
+          sudo apt-get clean
+          sudo rm -rf /var/lib/apt/lists/*
+          sudo rm -rf /tmp/*
+          sudo rm -rf /var/tmp/*
+          
+          # 清理Runner自身缓存
+          rm -rf ~/.cache/actions-runner/_work/_temp
+          rm -rf ~/.cache/actions-runner/cached/_diag/*.log
+          
+          # 显示清理后空间
+          echo "=== Disk space AFTER cleanup ==="
+          df -h
+      # ▲▲▲ 清理步骤结束 ▲▲▲
+      
+      # ▲▲▲ 清理步骤结束 ▲▲▲
+      # 2. 添加清理步骤（关键部分）
+      - name: Clean temporary files and free disk space
+        run: |
+          # 显示清理前的磁盘空间
+          echo "Disk space before cleanup:"
+          df -h
+          
+          # 清理系统临时文件
+          sudo rm -rf /tmp/*
+          sudo rm -rf /var/tmp/*
+          
+          # 清理APT缓存
+          sudo apt-get clean
+          sudo rm -rf /var/lib/apt/lists/*
+          
+          # 清理构建临时文件
+          rm -rf $GITHUB_WORKSPACE/tmp
+          rm -rf $GITHUB_WORKSPACE/build_dir
+          rm -rf $GITHUB_WORKSPACE/staging_dir
+          
+          # 清理下载缓存（谨慎使用）
+          # rm -rf $GITHUB_WORKSPACE/dl/*
+          sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc /etc/mysql /etc/php
+          
+          # 显示清理后的磁盘空间
+          echo "Disk space after cleanup:"
+          df -h
 
       - name: Prepare environments
         env:
