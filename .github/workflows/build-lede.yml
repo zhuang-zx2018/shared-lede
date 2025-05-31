@@ -200,6 +200,16 @@ jobs:
           # 显示清理后的磁盘空间
           echo "Disk space after cleanup:"
           df -h
+          
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y software-properties-common
+          sudo add-apt-repository -y universe
+          sudo add-apt-repository -y multiverse
+          sudo dpkg --add-architecture i386
+          sudo apt-get update
+          sudo apt-get install -y build-essential gettext autopoint
 
       - name: Prepare environments
         env:
@@ -209,7 +219,7 @@ jobs:
           sudo apt-get -y install gcc-multilib gettext
           sudo apt-get clean
           pip3 install -r $REQUIREMENTS
-
+                
       - name: Prepare deployment
         id: prepare-deployment
         env:
