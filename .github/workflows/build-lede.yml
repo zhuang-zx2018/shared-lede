@@ -262,7 +262,21 @@ jobs:
       - name: Compile
         run: |
           make -j$(nproc) || make -j1 V=s
-
+          
+      # retry ----
+      - name: Fix libc issue
+        if: failure()
+        run: |
+          rm -rf build_dir/target-aarch64_cortex-a53_musl/root-mediatek
+          rm -f staging_dir/target-aarch64_cortex-a53_musl/stamp/.target_install
+          make package/install -j1 V=s
+          cp staging_dir/target-*/root/lib/libc.so* staging_dir/target-aarch64_cortex-a53_musl/root/lib/
+    
+      - name: Retry build
+        if: failure()
+        run: make -j$(nproc) V=s
+      # ----
+      
       - name: Pick up files
         run: |
           mkdir -p _collected_firmware/packages
